@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 class SGM_Genetic:
-    def __init__(self, left, right, GT, size_pop=50, metric="mse"):
+        def __init__(self, left, right, GT, size_pop=50, tab="MSE"):
 
         self.count = 1
         self.generation = 1
@@ -15,17 +15,12 @@ class SGM_Genetic:
         self.parameter = [0, 160, 10, 150, 3, 50]
         self.Y = []
         self.size_pop = size_pop
-        self.metric = metric
 
-        if metric == "mse" or metric == "MSE":
-            fun = self.sgmMSE
-        elif metric == "bpp" or metric == "BPP":
-            fun = self.sgmBPP
-
-        # Genetic Algorithm
-        # [minDisparity, numDisparity, p1, p2, blocksize, speckleWindowSize]
-        self.ga = GA(func=fun, n_dim=6, size_pop=self.size_pop, prob_mut=0.01,
-                     lb=[0, 160, 10, 150, 3, 50], ub=[50, 480, 100, 500, 11, 200], precision=1e-7)
+        metric = "sgm" + tab.strip()
+        if hasattr(self, metric):
+            fun = getattr(self, metric)
+        else:
+            exit(">>>fit function chose error<<<\n>>>tab must be MSE or BPP!<<<")
 
     def run(self, iter=200):
         self.parameter, self.Y = self.ga.run(iter)
